@@ -1,4 +1,4 @@
-# Cocker PHP Development Environment
+# Docker PHP Development Environment
 
 You can use any PHP version you want; to do this, simply change the base image in the `.docker/Dockerfile`. [Click here](https://hub.docker.com/_/php/tags) to check all the official images.
 
