@@ -1,4 +1,4 @@
-FROM php:7.4.33-apache
+FROM php:7.3-apache
 LABEL maintainder="AllanCapistrano <allan.capistrano3@gmail.com>"
 
 # Copy application files to container
@@ -11,6 +11,9 @@ RUN apt-get install -y libzip-dev
 
 # Install unzip
 RUN apt-get install -y unzip
+
+# Install PDO
+RUN docker-php-ext-install pdo_mysql
 
 # Install git
 RUN apt-get install -y git
