@@ -4,23 +4,28 @@ LABEL maintainder="AllanCapistrano <allan.capistrano3@gmail.com>"
 # Copy application files to container
 COPY . /var/www/html/
 
-RUN apt-get update
+# Fix Debian Bullseye repositories
+RUN sed -i '/deb.debian.org/s/^/#/' /etc/apt/sources.list \
+    && echo "deb http://archive.debian.org/debian bullseye main" >> /etc/apt/sources.list \
+    && echo "deb http://archive.debian.org/debian bullseye-updates main" >> /etc/apt/sources.list \
+    && echo "deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20260903T220410Z/ bullseye-security main" >> /etc/apt/sources.list
 
-# Install libzip
-RUN apt-get install -y libzip-dev
-
-# Install unzip
-RUN apt-get install -y unzip
+# Install dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libzip-dev \
+        unzip \
+        git \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install PDO
 RUN docker-php-ext-install pdo_mysql
 
-# Install git
-RUN apt-get install -y git
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer \
+    | php -- --install-dir=/usr/local/bin --filename=composer \
+    && composer --version
 
-# Install composer and make command global
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer --version
-
-# Set property permissions to files
+# Set file permissions
 RUN chown -R www-data:www-data /var/www/html
